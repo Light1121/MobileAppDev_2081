@@ -1,7 +1,9 @@
 package com.fit2081.yushan33054754.digitalnutrition
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -56,7 +59,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun WelcomeScreen(modifier: Modifier = Modifier) {
-
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -88,10 +90,9 @@ fun WelcomeScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun AppNameWithIcon(){
-    // App Name
-    val appName = "NutriTrack"
+
     Text(
-        text = appName,
+        text = stringResource(R.string.app_name),
         fontSize = 64.sp,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center,
@@ -102,25 +103,14 @@ fun AppNameWithIcon(){
 
     // Logo
     Image(
-        painter = painterResource(id = R.drawable.logo),
-        contentDescription = "NutriTrack logo",
+        painter = painterResource(R.drawable.logo),
+        contentDescription = stringResource(R.string.logo_description),
         modifier = Modifier.size(256.dp)
     )
 }
 
 @Composable
 fun DisclaimerText() {
-    val disclaimerTextP1:String =
-        "This app provides general health and nutrition information " +
-                "for educational purposes only. " +
-                "It is not intended as medical advice, diagnosis, or treatment. " +
-                "Always consult a qualified healthcare professional before making any changes to your" +
-                " diet, exercise, or health regimen. \n Use this app at your own risk."
-    val disclaimerTextP2:String =
-        "If you’d like to an Accredited Practicing Dietitian (APD), " +
-                "\n visit the Monash Nutrition/Dietetics Clinic " +
-                "\n (discounted rates for students):"
-    val disclaimerTextURL = "https://www.monash.edu/medicine/scs/nutrition/research/facilities"
 
     Column(
         modifier = Modifier
@@ -130,7 +120,7 @@ fun DisclaimerText() {
     ) {
         //UPPER HALF text
         Text(
-            text = disclaimerTextP1,
+            text = stringResource(R.string.disclaimer_text_contentP1),
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.bodySmall.copy(
                 fontStyle = FontStyle.Normal,
@@ -138,11 +128,11 @@ fun DisclaimerText() {
             ),
             modifier = Modifier.fillMaxWidth()
         )
+        Spacer(modifier = Modifier.height(10.dp))
 
-        Spacer(modifier = Modifier.height(8.dp))
         //LOWER HALF
         Text(
-            text = disclaimerTextP2,
+            text = stringResource(R.string.disclaimer_text_contentP2),
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.bodySmall.copy(
                 fontStyle = FontStyle.Normal,
@@ -150,9 +140,10 @@ fun DisclaimerText() {
             ),
             modifier = Modifier.fillMaxWidth()
         )
+        // no spacer needed
         //URL
         Text(
-            text = disclaimerTextURL,
+            text = stringResource(R.string.disclaimer_text_URL),
             fontWeight = FontWeight.Bold,
             color = myBlue,
             textDecoration = TextDecoration.Underline,
@@ -165,12 +156,18 @@ fun DisclaimerText() {
 
 @Composable
 fun ToLoginButton() {
+    // for navigation and toast
     val context = LocalContext.current
 
     Button(
         onClick = {
-            val intent = Intent(context, LoginView::class.java)
-            context.startActivity(intent)
+            // to login
+            try {
+                val intent = Intent(context, LoginView::class.java)
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                toast(context,context.getString(R.string.general_unknown_error_message))
+            }
         },
         colors = ButtonDefaults.buttonColors(
             containerColor = myBlue,
@@ -180,22 +177,22 @@ fun ToLoginButton() {
             .width(256.dp)
             .height(48.dp)
     ) {
-        Text("Login")
+        Text(stringResource(R.string.login))
     }
 }
 
 @Composable
 fun StudentInfoText() {
-    //show student information
-    val studentName = "YuShan Lin"
-    val studentID = 33054854
-
     Text(
-        text = "Design with <3 \n Student: $studentName \n Student ID: $studentID",
+        text = stringResource(R.string.student_text),
         style = MaterialTheme.typography.bodySmall.copy(
             fontStyle = FontStyle.Normal,
             textAlign = TextAlign.Center
         ),
         modifier = Modifier.fillMaxWidth()
     )
+}
+
+fun toast(context: Context, displayText: String) {
+    Toast.makeText(context, displayText, Toast.LENGTH_SHORT).show()
 }

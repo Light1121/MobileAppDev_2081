@@ -1,5 +1,6 @@
 package com.fit2081.yushan33054754.digitalnutrition
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -13,6 +14,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -27,6 +31,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,11 +46,16 @@ import androidx.compose.ui.unit.sp
 import com.fit2081.yushan33054754.digitalnutrition.ui.theme.DigitalNutritionTheme
 import com.fit2081.yushan33054754.digitalnutrition.ui.theme.myBlue
 import androidx.compose.ui.platform.LocalContext
-
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 
 class LoginView : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -67,17 +77,23 @@ fun Login(modifier: Modifier = Modifier, onDismiss: () -> Unit) {
     //make sure it is fully expanded for the bottom sheet
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
+    //globe for id validate
+    var selectedId by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
+    var loginError = remember { mutableStateOf(false) }
 
     Surface(
         modifier = modifier.fillMaxSize(),
         color = myBlue
     ){
         Column(
-            modifier = Modifier.padding(16.dp).fillMaxSize(),
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ){
-            // hidden, but in case user scroll down
+            // hidden, but in case user close the bottom sheet
             HiddenLoginBackGround()
 
             // main login page
@@ -101,11 +117,11 @@ fun Login(modifier: Modifier = Modifier, onDismiss: () -> Unit) {
                     Spacer(modifier = Modifier.height(32.dp))
 
                     //ID input dropdown bar
-                    DropDownIDInput()
+                    DropDownIDInput(selectedId) { selectedId = it }
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // phone input
-                    PhoneNumberInput()
+                    PhoneNumberInput(phoneNumber, loginError) { phoneNumber = it }
                     Spacer(modifier = Modifier.height(16.dp))
 
                     //helping text
@@ -113,7 +129,7 @@ fun Login(modifier: Modifier = Modifier, onDismiss: () -> Unit) {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     //login button
-                    LoginButton()
+                    LoginButton(selectedId,phoneNumber, loginError)
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
@@ -136,7 +152,7 @@ fun HiddenLoginBackGround(){
     //user will only see this when scroll BottomSheet down
     //which means back to home page
     Text(
-        text = "Back to Welcome Page...\n \n Loading...",
+        text = stringResource(R.string.background_loading_to_welcome),
         fontSize = 16.sp,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center,
@@ -148,7 +164,7 @@ fun HiddenLoginBackGround(){
 @Composable
 fun LoginHeading() {
     Text(
-        text = "Login",
+        text = stringResource(R.string.login),
         fontSize = 32.sp,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center,
@@ -158,12 +174,16 @@ fun LoginHeading() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropDownIDInput() {
+fun DropDownIDInput(
+    selectedId: String,
+    onIdSelected: (String) -> Unit
+) {
+    val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
-    var selectedId by remember { mutableStateOf("") }
 
-    //dummy ID
-    val userIds = listOf("ID123", "ID456", "ID789", "ID101")
+    val userIds = remember(context) {
+        readIDsFromCSV(context, "user_data.csv")
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -171,8 +191,8 @@ fun DropDownIDInput() {
     ) {
         OutlinedTextField(
             value = selectedId,
-            onValueChange = {},
-            label = { Text("Select your ID") },
+            onValueChange = {}, //no input just select
+            label = { Text(stringResource(R.string.select_ID)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .menuAnchor(),
@@ -186,60 +206,90 @@ fun DropDownIDInput() {
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            userIds.forEach { id ->
-                DropdownMenuItem(
-                    text = { Text(id) },
-                    onClick = {
-                        selectedId = id
-                        expanded = false
-                    }
-                )
+            Column(  // column can be scroll
+                modifier = Modifier.height(300.dp).verticalScroll(rememberScrollState())
+            ) {
+                userIds.forEach { id ->
+                    DropdownMenuItem(
+                        text = { Text(id) },
+                        onClick = {
+                            onIdSelected(id)
+                            expanded = false
+                        }
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun PhoneNumberInput(){
-    var phoneNumber by remember { mutableStateOf("") }
+fun PhoneNumberInput(
+    phoneNumber: String,
+    loginError: MutableState<Boolean>,
+    onPhoneNumberChange: (String) -> Unit
+) {
+    var formatError by remember { mutableStateOf(false) }
 
     OutlinedTextField(
         value = phoneNumber,
-        // TODO -> check non integer value and length
-        // TODO -> make a boolean, if valid input then button color blue, else gray
-        onValueChange = { phoneNumber = it },
-        label = { Text("Phone number") },
-        modifier = Modifier.fillMaxWidth()
+        onValueChange = { input ->
+            onPhoneNumberChange(input)
+            formatError = input.any { !it.isDigit() }
+            loginError.value = false //clean error for re-input
+        },
+        label = { Text(stringResource(R.string.phone_number)) },
+        modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        isError = formatError || loginError.value,
+        supportingText = {
+            when {
+                formatError -> Text(
+                    text = stringResource(R.string.input_only_number),
+                    color = Color.Red
+                )
+                loginError.value -> Text(
+                    text = stringResource(R.string.login_wrong_ID_password),
+                    color = Color.Red
+                )
+            }
+        }
     )
 }
 
 @Composable
 fun LoginHelpingText(){
     Text(
-        text = "This app is only for pre-registered users. " +
-                "\n Please have your ID and phone number handy before continuing.",
+        text = stringResource(R.string.login_helping),
         style = MaterialTheme.typography.bodySmall,
         modifier = Modifier.padding(top = 8.dp)
     )
 }
 
 @Composable
-fun LoginButton(){
+fun LoginButton(selectedId:String,phoneNumber: String, loginError: MutableState<Boolean>){
     //for toast and navigate page
     val context = LocalContext.current
 
     Button(
         onClick = {
-            if (false){ //Login Success
-                Toast.makeText(context, " Login Success ✅ ", Toast.LENGTH_SHORT).show()
-                //to Homepage
-                val intent = Intent(context, HomeView::class.java)
-                context.startActivity(intent)
-            } else if (false) { //Login Fail
-                Toast.makeText(context, " Login Failed ❌ ", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, " Unknown Error ❌ \n Please restart app ", Toast.LENGTH_SHORT).show()
+            try {
+                val isValid = loginValidation(context, selectedId, phoneNumber)
+
+                if (isValid){ //Login Success
+                    toast(context, context.getString(R.string.login_success))
+                    //to Homepage
+                    loginError.value = false
+                    val intent = Intent(context, HomeView::class.java)
+                    context.startActivity(intent)
+                } else { //Login Fail
+                    toast(context, context.getString(R.string.login_failed))
+                    loginError.value = true
+                }
+            } catch (e: Exception) {
+                toast(context, context.getString(R.string.general_unknown_error_message))
             }
+
 
         },
         modifier = Modifier
@@ -247,6 +297,55 @@ fun LoginButton(){
             .height(50.dp),
         colors = ButtonDefaults.buttonColors(myBlue)
     ) {
-        Text("Continue", fontSize = 18.sp)
+        Text(stringResource(R.string.continue_button), fontSize = 18.sp)
+    }
+}
+
+
+fun readIDsFromCSV(context: Context, fileName: String): List<String> {
+
+    var userIDList = mutableListOf<String>()
+
+    try {
+        val inputStream = context.assets.open(fileName)
+        val reader = BufferedReader(InputStreamReader(inputStream))
+
+        userIDList = reader.useLines { lines ->
+            lines.drop(1)
+                .map {  it.split(",").getOrNull(1)?.trim() ?: ""  }
+                .filter { it.isNotEmpty() }
+                .toList()
+        }.toMutableList()
+    } catch (e: Exception) {
+        toast(context, context.getString(R.string.read_rile_error))
+    }
+    return userIDList
+}
+
+fun loginValidation(context: Context, selectedId: String, phoneNumber: String,
+                    fileName: String = "user_data.csv"): Boolean {
+
+    if (selectedId.isEmpty() || phoneNumber.isEmpty()) {
+        return false
+    }
+
+    try {
+        val inputStream = context.assets.open(fileName)
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        var isValid = false
+        reader.useLines { lines ->
+            lines.forEach { line ->
+                val columns = line.split(",")
+                val phone = columns[0].trim()
+                val userId = columns[1].trim()
+                if (userId == selectedId && phone == phoneNumber) {
+                    return true
+                }
+            }
+        }
+        return isValid
+    } catch (e: Exception) {
+        toast(context, context.getString(R.string.read_rile_error))
+        return false
     }
 }
