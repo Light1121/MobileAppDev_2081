@@ -19,8 +19,10 @@
 
     <!--descriptions-->
     <string name="logo_description">NutriTrack logo</string>
+    <string name="ArrowBackDescription">Back to previous page</string>
 
     <!--pure text-->
+    <string name="loading"> Loading… </string>
     <string name="disclaimer_text_contentP1">This app provides general health and nutrition information for educational purposes only.
         \n It is not intended as medical advice, diagnosis, or treatment.
         \n Always consult a qualified healthcare professional before making any changes to your diet, exercise, or health regimen. Use this app at your own risk.</string>
@@ -42,15 +44,19 @@
     <string name="select_ID">Select your ID</string>
     <string name="phone_number">Phone Number</string>
     <string name="continue_button">continue</string>
+    <string name="questionnaire_title">Food Intake Questionnaire</string>
 
     <!--toasts/warning-->
     <string name="general_unknown_error_message"> Unknown Error ❌ \n Please restart app </string>
     <string name="input_only_number">Please only enter number</string>
+    <string name="input_correct_length">Please enter only 11 digits</string>
+    <string name="input_au_phone">Please enter AU phone number (start with 614)</string>
     <string name="login_wrong_ID_password">ID or Phone Number incorrect</string>
     <string name="login_success"> Login Success ✅ </string>
     <string name="login_failed"> Login Failed ❌ </string>
     <string name="read_rile_error"> Read CSV File Error ❌ </string>
     <string name="title_activity_questionnaire">Questionnaire</string>
     <string name="title_activity_questionnaire_view">QuestionnaireView</string>
+    <string name="title_activity_constructing_view">ConstructingView</string>
 
 </resources>

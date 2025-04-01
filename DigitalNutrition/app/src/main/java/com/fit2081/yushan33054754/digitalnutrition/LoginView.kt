@@ -229,22 +229,26 @@ fun PhoneNumberInput(
     loginError: MutableState<Boolean>,
     onPhoneNumberChange: (String) -> Unit
 ) {
-    var formatError by remember { mutableStateOf(false) }
+    var nonDigitError by remember { mutableStateOf(false) }
+    var nonPhoneError by remember { mutableStateOf(false) }
+    var lengthError by remember { mutableStateOf(false) }
 
     OutlinedTextField(
         value = phoneNumber,
         onValueChange = { input ->
-            onPhoneNumberChange(input)
-            formatError = input.any { !it.isDigit() }
             loginError.value = false //clean error for re-input
+            onPhoneNumberChange(input)
+            nonDigitError = input.any { !it.isDigit() }
+            nonPhoneError = !input.startsWith("614")
+            lengthError = input.length > 11
         },
         label = { Text(stringResource(R.string.phone_number)) },
         modifier = Modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        isError = formatError || loginError.value,
+        isError = nonDigitError || loginError.value,
         supportingText = {
             when {
-                formatError -> Text(
+                nonDigitError -> Text(
                     text = stringResource(R.string.input_only_number),
                     color = Color.Red
                 )
@@ -252,6 +256,15 @@ fun PhoneNumberInput(
                     text = stringResource(R.string.login_wrong_ID_password),
                     color = Color.Red
                 )
+                nonPhoneError -> Text(
+                    text = stringResource(R.string.input_au_phone),
+                    color = Color.Red
+                )
+                lengthError -> Text(
+                    text = stringResource(R.string.input_correct_length),
+                    color = Color.Red
+                )
+
             }
         }
     )
@@ -349,3 +362,5 @@ fun loginValidation(context: Context, selectedId: String, phoneNumber: String,
         return false
     }
 }
+
+
