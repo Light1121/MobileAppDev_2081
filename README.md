@@ -19,3 +19,6 @@
 ##### 01/04/2025: Used res strings.xml to store text instead, updated the login validation, basic UI for home. With more try catch and toast 
 
 ##### 01/04/025 NIGHT: Finished UI for Homepage with Nav and Finished the Questionnaire UI.
+
+![image](https://github.com/user-attachments/assets/7af7a2a4-f870-43d5-b105-2294f722958f)
+![Uploading image.png…]()
