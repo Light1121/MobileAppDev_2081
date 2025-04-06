@@ -19,7 +19,15 @@
 
     <!--descriptions-->
     <string name="logo_description">NutriTrack logo</string>
+    <string name="main_page_dish_des">Balanced meal plate</string>
+    <string name="back_page">"Back to previsou page"</string>
     <string name="ArrowBackDescription">Back to previous page</string>
+    <string name="health_devotee_description">I’m passionate about healthy eating n health plays a big part in my life. I use social media to follow active lifestyle personalities or get new recipes/exercise ideas. I may even buy superfoods or follow a particular type of diet. I like to think I am super healthy.</string>
+    <string name="mindful_eater_description">	I’m health-conscious and being healthy and eating healthy is important to me. Although health means different things to different people, I make conscious lifestyle decisions about eating based on what I believe healthy means. I look for new recipes and healthy eating information on social media.</string>
+    <string name="wellness_striver_description">I aspire to be healthy (but struggle sometimes). Healthy eating is hard work! I’ve tried to improve my diet, but always find things that make it difficult to stick with the changes. Sometimes I notice recipe ideas or healthy eating hacks, and if it seems easy enough, I’ll give it a go.</string>
+    <string name="balance_seeker_description">I try and live a balanced lifestyle, and I think that all foods are okay in moderation. I shouldn’t have to feel guilty about eating a piece of cake now and again. I get all sorts of inspiration from social media like finding out about new restaurants, fun recipes and sometimes healthy eating tips.</string>
+    <string name="health_procrastinator_description">I’m contemplating healthy eating but it’s not a priority for me right now. I know the basics about what it means to be healthy, but it doesn’t seem relevant to me right now. I have taken a few steps to be healthier but I am not motivated to make it a high priority because I have too many other things going on in my life.</string>
+    <string name="food_carefree_description">	I’m not bothered about healthy eating. I don’t really see the point and I don’t think about it. I don’t really notice healthy eating tips or recipes and I don’t care what I eat.</string>
 
     <!--pure text-->
     <string name="loading"> Loading… </string>
@@ -38,6 +46,16 @@
     <string name="FoodQualityScoreExplainHeading">What is the Food Quality Score</string>
     <string name="FoodQualityScoreExplainContentPt1">Your Food Quality Score provides a snapshot of how well your eating patterns align with established food guidelines, help you identify both strengths and opportunities for improvement in your diet.</string>
     <string name="FoodQualityScoreExplainContentPt2">This personalized measurement considers various food groups including vegetables, frits, whole grains, and proteins to give you practical insights for make healthier food choices.</string>
+    <string name="your_persona"> Your Persona </string>
+    <string name="food_cat_heading"> Tick all food categories you can eat </string>
+    <string name="persona_explain"> "People can be broadly classified into 6 different types based on their eating preferences. Click on each button below to find out the different types, and select the type that best fits you!" </string>
+    <string name="timing">Timing</string>
+    <string name="time_meal">What time of day approx. do you normally eat your biggest meal?</string>
+    <string name="time_sleep">What time of day approx. do you go to sleep at night?</string>
+    <string name="time_wake">What time of day approx. do you wake up in the morning?</string>
+    <string name="hello">Hello! </string>
+    <string name="total_score">Total Food Quality Score</string>
+    <string name="share_insights_title">Share Nutrition Insights via</string>
 
     <!--buttons/components-->
     <string name="login">Login</string>
@@ -45,6 +63,14 @@
     <string name="phone_number">Phone Number</string>
     <string name="continue_button">continue</string>
     <string name="questionnaire_title">Food Intake Questionnaire</string>
+    <string name="health_devotee">Health Devotee</string>
+    <string name="mindful_eater">Mindful Eater</string>
+    <string name="wellness_striver">Wellness Striver</string>
+    <string name="balance_seeker">Balance Seeker</string>
+    <string name="health_procrastinator">Health Procrastinator</string>
+    <string name="food_carefree">Food Carefree</string>
+    <string name="dismiss"> Dismiss </string>
+    <string name="edit"> Edit </string>
 
     <!--toasts/warning-->
     <string name="general_unknown_error_message"> Unknown Error ❌ \n Please restart app </string>
@@ -58,5 +84,7 @@
     <string name="title_activity_questionnaire">Questionnaire</string>
     <string name="title_activity_questionnaire_view">QuestionnaireView</string>
     <string name="title_activity_constructing_view">ConstructingView</string>
+    <string name="answer_saved"> Answer Saved ✅ </string>
+    <string name="incomplete_answer"> Incomplete Answer ❌ </string>
 
 </resources>

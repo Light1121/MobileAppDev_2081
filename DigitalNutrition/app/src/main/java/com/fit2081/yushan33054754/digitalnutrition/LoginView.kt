@@ -3,7 +3,6 @@ package com.fit2081.yushan33054754.digitalnutrition
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -51,11 +50,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
+var currentUser: User? = null
 
 class LoginView : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -77,7 +75,7 @@ fun Login(modifier: Modifier = Modifier, onDismiss: () -> Unit) {
     //make sure it is fully expanded for the bottom sheet
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    //globe for id validate
+    //globe var for id validate
     var selectedId by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var loginError = remember { mutableStateOf(false) }
@@ -133,11 +131,6 @@ fun Login(modifier: Modifier = Modifier, onDismiss: () -> Unit) {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
-
-
-
-
-
         }
     }
 }
@@ -290,11 +283,21 @@ fun LoginButton(selectedId:String,phoneNumber: String, loginError: MutableState<
                 val isValid = loginValidation(context, selectedId, phoneNumber)
 
                 if (isValid){ //Login Success
-                    toast(context, context.getString(R.string.login_success))
-                    //to Homepage
                     loginError.value = false
-                    val intent = Intent(context, HomeView::class.java)
-                    context.startActivity(intent)
+                    toast(context, context.getString(R.string.login_success))
+
+                    currentUser = buildCurrentUser(context, selectedId)
+                    val hasCompleted = checkQuestionnaireStatus(context, selectedId)
+
+                    if (hasCompleted) {
+                        //to Homepage
+                        val intent = Intent(context, HomeView::class.java)
+                        context.startActivity(intent)
+                    } else { //to questionnaire
+                        val intent = Intent(context, QuestionnaireView::class.java)
+                        context.startActivity(intent)
+                    }
+
                 } else { //Login Fail
                     toast(context, context.getString(R.string.login_failed))
                     loginError.value = true
@@ -335,7 +338,9 @@ fun readIDsFromCSV(context: Context, fileName: String): List<String> {
     return userIDList
 }
 
-fun loginValidation(context: Context, selectedId: String, phoneNumber: String,
+fun loginValidation(context: Context,
+                    selectedId: String,
+                    phoneNumber: String,
                     fileName: String = "user_data.csv"): Boolean {
 
     if (selectedId.isEmpty() || phoneNumber.isEmpty()) {
@@ -362,5 +367,37 @@ fun loginValidation(context: Context, selectedId: String, phoneNumber: String,
         return false
     }
 }
+
+fun buildCurrentUser(context: Context, id: String): User? {
+    val fileName = "user_data.csv"
+
+    try {
+        val inputStream = context.assets.open(fileName)
+        val reader = BufferedReader(InputStreamReader(inputStream))
+
+        reader.useLines { lines ->
+            for (line in lines) {
+                val columns = line.split(",")
+                if (columns.size >= 2) {
+                    val userId = columns[1].trim()
+
+                    if (userId == id) {
+                        return buildUser(line)
+                    }
+                }
+            }
+        }
+    } catch (e: Exception) {
+        toast(context, context.getString(R.string.read_rile_error))
+    }
+    return null
+}
+
+
+fun checkQuestionnaireStatus(context: Context, userId: String): Boolean {
+    val prefs = context.getSharedPreferences("user_${userId}_prefs", Context.MODE_PRIVATE)
+    return prefs.getBoolean("hasCompletedQuestionnaire", false)
+}
+
 
 

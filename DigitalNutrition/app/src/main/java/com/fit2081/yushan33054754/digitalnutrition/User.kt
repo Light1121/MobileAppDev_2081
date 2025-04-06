@@ -1,6 +1,7 @@
 package com.fit2081.yushan33054754.digitalnutrition
 
-data class User(
+data class User( //ChatGPT were used to build write the attribute of user
+// This is done by prompting AI to read the csv file then write the class in given format
     val phoneNumber: String,
     val userId: Int,
     val sex: String,
@@ -63,18 +64,18 @@ data class User(
     val saturatedFat: Double,
     val unsaturatedFatHEIFAscoreMale: Double,
     val unsaturatedFatHEIFAscoreFemale: Double,
-    val unsaturatedFatServeSize: Double
+    val unsaturatedFatServeSize: Double,
 )
 
-
-
 fun buildUser(csvLine: String): User {
+    //ChatGPT were used to build write the attribute of user
+// This is done by prompting AI to read the csv file then write the class in given format
     val fields = csvLine.split(",").map { it.trim() }
 
     return User(
-        phoneNumber = fields[0],
+        phoneNumber = fields[0].toString(),
         userId = fields[1].toInt(),
-        sex = fields[2],
+        sex = fields[2].toString(),
         HEIFAtotalscoreMale = fields[3].toDouble(),
         HEIFAtotalscoreFemale = fields[4].toDouble(),
         discretionaryHEIFAscoreMale = fields[5].toDouble(),
@@ -134,6 +135,100 @@ fun buildUser(csvLine: String): User {
         saturatedFat = fields[59].toDouble(),
         unsaturatedFatHEIFAscoreMale = fields[60].toDouble(),
         unsaturatedFatHEIFAscoreFemale = fields[61].toDouble(),
-        unsaturatedFatServeSize = fields[62].toDouble()
+        unsaturatedFatServeSize = fields[62].toDouble(),
+
     )
 }
+
+
+fun getScore(user: User): List<Double> {
+    // DONE BY HAND :(
+    // but the comment is done by CHATGPT to make sure its right
+    return when (user.sex) {
+        "Male" -> listOf(
+            user.HEIFAtotalscoreMale,                 // total
+            user.discretionaryHEIFAscoreMale,         // discretionary (10)
+            user.vegetablesHEIFAscoreMale,            // vegetables (5)
+            user.vegetablesVariationsScore,           // vegetables variation (5)
+            user.fruitHEIFAscoreMale,                 // fruit (5)
+            user.fruitVariationsScore,                // fruit variation (5)
+            user.grainsAndCerealsHEIFAscoreMale,      // grains and cereals (5)
+            user.wholeGrainsHEIFAscoreMale,           // whole grains (5)
+            user.meatAndAlternativesHEIFAscoreMale,   // meat (10)
+            user.dairyAndAlternativesHEIFAscoreMale,  // dairy (10)
+            user.waterHEIFAscoreMale,                 // water (5)
+            user.unsaturatedFatHEIFAscoreMale,        // unsaturated fat (5)
+            user.saturatedFatHEIFAscoreMale,          // saturated fat (5)
+            user.sodiumHEIFAscoreMale,                // sodium (10)
+            user.sugarHEIFAscoreMale,                 // sugar (10)
+            user.alcoholHEIFAscoreMale                // alcohol (5)
+        )
+        "Female" -> listOf(
+            user.HEIFAtotalscoreFemale,               // total
+            user.discretionaryHEIFAscoreFemale,       // discretionary (10)
+            user.vegetablesHEIFAscoreFemale,          // vegetables (5)
+            user.vegetablesVariationsScore,           // vegetables variation (5)
+            user.fruitHEIFAscoreFemale,               // fruit (5)
+            user.fruitVariationsScore,                // fruit variation (5)
+            user.grainsAndCerealsHEIFAscoreFemale,    // grains and cereals (5)
+            user.wholeGrainsHEIFAscoreFemale,         // whole grains (5)
+            user.meatAndAlternativesHEIFAscoreFemale, // meat (10)
+            user.dairyAndAlternativesHEIFAscoreFemale,// dairy (10)
+            user.waterHEIFAscoreFemale,               // water (5)
+            user.unsaturatedFatHEIFAscoreFemale,      // unsaturated fat (5)
+            user.saturatedFatHEIFAscoreFemale,        // saturated fat (5)
+            user.sodiumHEIFAscoreFemale,              // sodium (10)
+            user.sugarHEIFAscoreFemale,               // sugar (10)
+            user.alcoholHEIFAscoreFemale              // alcohol (5)
+        )
+        else -> emptyList()
+    }
+}
+
+fun calculateScore(user: User): Double {
+    return when (user.sex.lowercase()) {
+        "male" -> calculateMaleScore(user)
+        "female" -> calculateFemaleScore(user)
+        else -> 0.0
+    }
+}
+
+fun calculateMaleScore(user: User): Double {
+    //DONE BY HAND :(
+    return (user.discretionaryHEIFAscoreMale +
+            user.vegetablesHEIFAscoreMale +
+            user.vegetablesVariationsScore +
+            user.fruitHEIFAscoreMale +
+            user.fruitVariationsScore +
+            user.grainsAndCerealsHEIFAscoreMale +
+            user.wholeGrainsHEIFAscoreMale +
+            user.meatAndAlternativesHEIFAscoreMale +
+            user.dairyAndAlternativesHEIFAscoreMale +
+            user.sodiumHEIFAscoreMale +
+            user.alcoholHEIFAscoreMale +
+            user.waterHEIFAscoreMale +
+            user.sugarHEIFAscoreMale +
+            user.saturatedFatHEIFAscoreMale +
+            user.unsaturatedFatHEIFAscoreMale
+            )
+}
+fun calculateFemaleScore(user: User): Double {
+    //DONE BY HAND :(
+    return (user.discretionaryHEIFAscoreFemale +
+            user.vegetablesHEIFAscoreFemale +
+            user.vegetablesVariationsScore +
+            user.fruitHEIFAscoreFemale +
+            user.fruitVariationsScore +
+            user.grainsAndCerealsHEIFAscoreFemale +
+            user.wholeGrainsHEIFAscoreFemale +
+            user.meatAndAlternativesHEIFAscoreFemale +
+            user.dairyAndAlternativesHEIFAscoreFemale +
+            user.sodiumHEIFAscoreFemale +
+            user.alcoholHEIFAscoreFemale +
+            user.waterHEIFAscoreFemale +
+            user.sugarHEIFAscoreFemale +
+            user.saturatedFatHEIFAscoreFemale +
+            user.unsaturatedFatHEIFAscoreFemale
+            )
+}
+
